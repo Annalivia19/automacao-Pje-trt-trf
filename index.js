@@ -5,7 +5,7 @@ import multer from 'multer';
 import fs from 'fs/promises';
 import puppeteer from 'puppeteer';
 import { executar as executarAutomacao } from './executarAutomacao.js';
-import executarTRF3Route from './routes/executarTRF3Route.js'; // Import correto
+import executarTRF3Route from './routes/executarTRF3Route.js'; 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,10 +18,10 @@ const upload = multer({ dest: path.join(__dirname, 'uploads/') });
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ Use a rota do TRF3
+//  Use a rota do TRF3
 app.use('/api/automacao/trf3', executarTRF3Route);
 
-// 🔐 ROTA DE LOGIN
+//  ROTA DE LOGIN
 app.post('/api/login', async (req, res) => {
   const { login, senha } = req.body;
 
@@ -61,7 +61,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// 📎 ROTA DE ENVIO DE PETIÇÃO
+// ROTA DE ENVIO DE PETIÇÃO
 app.post('/api/automacao/executar', upload.single('arquivo'), async (req, res) => {
   console.log('BODY:', req.body);
   console.log('FILE:', req.file);
@@ -98,7 +98,7 @@ app.post('/api/automacao/executar', upload.single('arquivo'), async (req, res) =
 
 
 
-// 🚀 INICIAR SERVIDOR
+// INICIAR SERVIDOR
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

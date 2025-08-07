@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Resultado</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .box {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .box h1 {
+      color: #1e40af;
+    }
+
+    .box p {
+      margin: 1rem 0;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .fail {
+      color: red;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      background-color: #1e40af;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Resultado da Automação</h1>
+    <div id="respostaAutomacao"></div>
+    <button onclick="window.location.href='peticao.html'">Nova Petição</button>
+  </div>
+
+  <script>
+    const dados = JSON.parse(localStorage.getItem('resultadoAutomacao'));
+    const div = document.getElementById('respostaAutomacao');
+
+    if (dados) {
+      div.innerHTML = `
+        <p class="${dados.sucesso ? 'success' : 'fail'}">
+          ${dados.mensagem}
+        </p>
+      `;
+    } else {
+      div.innerHTML = '<p class="fail">Nenhum dado encontrado.</p>';
+    }
+  </script>
+</body>
+</html>

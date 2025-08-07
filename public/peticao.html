@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Petição - Automação PJe TRT</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .container img.logo {
+      max-width: 160px;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      font-size: 1.4rem;
+      color: #1e3a8a;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #201eaf;
+      box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.2);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      background-color: #1e40af;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1e3a8a;
+    }
+
+    .autocomplete-container {
+      position: relative;
+      width: 100%;
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    label[for="tipoPeticaoInput"] {
+      font-weight: 600;
+      color: #1e3a8a;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      border: 1px solid #ccc;
+      border-top: none;
+      max-height: 200px;
+      overflow-y: auto;
+      background: white;
+      z-index: 1000;
+    }
+
+    .autocomplete-option {
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    .autocomplete-option:hover,
+    .autocomplete-option.active {
+      background-color: #1e40af;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="imagens/salgado.png" alt="Logo da Empresa" class="logo" />
+    <h2>Petição - Automação PJe TRT</h2>
+
+    <input type="text" id="login" placeholder="Login" disabled />
+    <input type="password" id="senha" placeholder="Senha" disabled />
+
+    <input type="text" id="processo" placeholder="Número do Processo" autocomplete="off" />
+
+    <input type="file" id="arquivoPeticao" accept="application/pdf" />
+
+    <div class="autocomplete-container">
+      <label for="tipoPeticaoInput">Tipo de Petição</label>
+      <input type="text" id="tipoPeticaoInput" placeholder="Digite para buscar..." autocomplete="off" />
+      <div id="autocompleteList" class="autocomplete-list" hidden></div>
+    </div>
+
+    <button id="btnExecutar">Executar Automação</button>
+  </div>
+
+  <script>
+    // Carrega login/senha do localStorage
+    window.onload = () => {
+      const login = localStorage.getItem('login') || '';
+      const senha = localStorage.getItem('senha') || '';
+      document.getElementById('login').value = login;
+      document.getElementById('senha').value = senha;
+    };
+
+    // Lista de tipos de petição
+    const tiposPeticao = [
+      "Acordo", "Agravo de Instrumento em Agravo de Petição",
+      "Agravo de Instrumento em Recurso Extraordinário",
+      "Agravo de Instrumento em Recurso Ordinário", "Agravo de Petição",
+      "Agravo Interno", "Apresentação de Cálculos", "Apresentação de Memoriais",
+      "Apresentação de Procuração", "Apresentação de Quesitos",
+      "Apresentação de Quesitos Suplementares", "Apresentação de Renúncia de Procuração/Substabelecimento",
+      "Apresentação de Rol de Testemunhas", "Apresentação de Substabelecimento com Reserva de Poderes",
+      "Apresentação de Substabelecimento sem Reserva de Poderes", "Contestação",
+      "Contestação da Reconvenção", "Contraminuta", "Contrarrazões", "Desistência"
+    ];
+
+    let currentFocus = -1;
+    const input = document.getElementById('tipoPeticaoInput');
+    const list = document.getElementById('autocompleteList');
+
+    function closeAllLists() {
+      list.hidden = true;
+    }
+
+    function addActive(options) {
+      if (!options) return;
+      removeActive(options);
+      if (currentFocus >= options.length) currentFocus = 0;
+      if (currentFocus < 0) currentFocus = options.length - 1;
+      options[currentFocus].classList.add('active');
+    }
+
+    function removeActive(options) {
+      options.forEach(opt => opt.classList.remove('active'));
+    }
+
+    input.addEventListener('input', function () {
+      const val = this.value.toLowerCase();
+      list.innerHTML = '';
+      currentFocus = -1;
+      if (!val) {
+        list.hidden = true;
+        return;
+      }
+      const filtered = tiposPeticao.filter(tipo => tipo.toLowerCase().includes(val));
+      if (filtered.length === 0) {
+        list.hidden = true;
+        return;
+      }
+      filtered.forEach(tipo => {
+        const option = document.createElement('div');
+        option.textContent = tipo;
+        option.classList.add('autocomplete-option');
+        option.addEventListener('click', () => {
+          input.value = tipo;
+          list.hidden = true;
+        });
+        list.appendChild(option);
+      });
+      list.hidden = false;
+    });
+
+    input.addEventListener('keydown', function (e) {
+      const options = list.querySelectorAll('.autocomplete-option');
+      if (e.key === 'ArrowDown') {
+        currentFocus++;
+        addActive(options);
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        currentFocus--;
+        addActive(options);
+        e.preventDefault();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (currentFocus > -1 && options[currentFocus]) {
+          options[currentFocus].click();
+        }
+      }
+    });
+
+    document.addEventListener('click', e => {
+      if (e.target !== input) {
+        closeAllLists();
+      }
+    });
+
+    // Botão para executar automação
+    document.getElementById('btnExecutar').addEventListener('click', async () => {
+      const login = document.getElementById('login').value.trim();
+      const senha = document.getElementById('senha').value.trim();
+      const processo = document.getElementById('processo').value.trim();
+      const peticao = document.getElementById('tipoPeticaoInput').value.trim();
+      const arquivo = document.getElementById('arquivoPeticao').files[0];
+
+      if (!login || !senha || !processo || !peticao || !arquivo) {
+        alert('Preencha todos os campos e selecione um arquivo!');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('login', login);
+      formData.append('senha', senha);
+      formData.append('numero_processo', processo);
+      formData.append('peticaoTipo', peticao);
+      formData.append('arquivo', arquivo);
+      formData.append('tribunal', tribunal); // 
+
+
+const rota = tribunal === 'trf' ? '/api/automacao/trf3' : '/api/automacao/executar';
+
+      try {
+        const response = await fetch('/api/automacao/executar', {
+  method: 'POST',
+  body: formData
+});
+
+        const resultado = await response.json();
+
+        if (!response.ok) {
+          throw new Error(resultado.erro || 'Erro interno ao executar automação');
+        }
+
+        localStorage.setItem('resultadoAutomacao', JSON.stringify(resultado));
+        alert(resultado.mensagem || 'Automação executada com sucesso!');
+      } catch (error) {
+        alert('Erro ao executar automação: ' + error.message);
+      }
+    });
+  </script>
+</body>

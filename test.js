@@ -7,14 +7,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dadosMock = {
-  login: "10538268859",
-  senha: "Ra241216",
-  pin_certificado: "31555531",
-  numero_processo: "1001474-73.2023.5.02.0075",
+  login: "xxxxxxx",
+  senha: "xxxxxx",
+  pin_certificado: "xxxxx",
+  numero_processo: "xxxxxx-xx.xx23.x.x2.xxxx",
   peticao: {
-    nome: "ROSINALVA JESUS DOS SANTOS.pdf",
+    nome: "xxxxxxxxxxxx.pdf",
     tipo: "Acordo",
-    path: path.resolve('/home/user/Downloads/manifestacao_rosinalva.pdf')
+    path: path.resolve('/xxx/xxxx/xxxxxx/manifestacao_xxxxx.pdf')
   }
 };
 

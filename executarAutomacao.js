@@ -162,26 +162,10 @@ console.log(`Anexando arquivo: ${dados.peticao.nome || 'Nome não informado'}`);
 
 await sleep(1000);
 
+// Upload do arquivo//
 
-const inputUploadHandle = await abaPeticionamento.$('#upload-anexo-0');
-if (!inputUploadHandle) throw new Error('Campo de upload não encontrado');
+//Somente no repositório original
 
-await abaPeticionamento.waitForSelector('#upload-anexo-0', { visible: true });
-await inputUploadHandle.uploadFile(pdfConvertido);
-await abaPeticionamento.waitForResponse(resp => 
-  resp.url().includes('/upload') && resp.status() === 200
-);
-
-
-
-await abaPeticionamento.evaluate(() => {
-  const input = document.getElementById('upload-anexo-0');
-  if (input) {
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-  }
-});
-
-await sleep(4000);  // Aguarde processamento do arquivo no PJe
 
 //Salvar petição
 

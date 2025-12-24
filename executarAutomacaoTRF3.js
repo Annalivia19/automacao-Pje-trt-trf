@@ -43,7 +43,7 @@ export async function executar(dados) {
     await limparCookieAkBmsc(page);
  
       // 2. Login - preenchendo campos com delays simulando digitação humana
-    console.log("🔐 Realizando login...");
+    console.log("Realizando login...");
 
     await page.waitForSelector('#username'
 
@@ -56,7 +56,7 @@ export async function executar(dados) {
       await new Promise(resolve => setTimeout(resolve, 500));
        await page.click('#kc-login');
 
-     console.log("⏳ Aguardando redirecionamento após login...");
+     console.log("Aguardando redirecionamento após login...");
      await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
 
@@ -138,12 +138,12 @@ if (botaoHandle) {
   if (box) {
     await novaAba.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await novaAba.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-    console.log("✅ Clique no botão de juntada realizado com sucesso.");
+    console.log("Clique no botão de juntada realizado com sucesso.");
   } else {
-    console.log("⚠️ Bounding box do botão não encontrado.");
+    console.log("Bounding box do botão não encontrado.");
   }
 } else {
-  console.log("❌ Botão de juntada não encontrado.");
+  console.log("Botão de juntada não encontrado.");
 }
 
 await limparCookieAkBmsc(page);
